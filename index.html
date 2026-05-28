@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Surprise 🎀</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-from: #e8e8e4;
+    --bg-to: #d8d5cf;
+    --ribbon: #7a8fa6;
+    --ribbon-dark: #5a7090;
+    --box-main: #d8d5cf;
+    --box-shadow-color: #b8b5af;
+    --lid-main: #cacac4;
+    --text-pink: #d4607a;
+    --confetti-duration: 4s;
+    --transition-speed: 0.8s;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Playfair Display', serif;
+    background: linear-gradient(145deg, var(--bg-from) 0%, var(--bg-to) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    cursor: default;
+    transition: background var(--transition-speed) ease;
+    position: relative;
+  }
+
+  body.revealed {
+    background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 40%, #fce4ec 100%);
+  }
+
+  /* Subtle background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(120,140,160,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(100,120,140,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating dots */
+  .dot {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: floatDot linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes floatDot {
+    0% { transform: translateY(0) scale(1); opacity: 0.1; }
+    50% { transform: translateY(-30px) scale(1.1); opacity: 0.2; }
+    100% { transform: translateY(0) scale(1); opacity: 0.1; }
+  }
+
+  /* Stage */
+  .stage {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 32px);
+  }
+
+  .hint {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(0.75rem, 2vw, 1rem);
+    color: #b0a09a;
+    letter-spacing: 0.1em;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    user-select: none;
+  }
+  .hint.hide { opacity: 0; }
+
+  /* Gift wrapper */
+  .gift-wrapper {
+    position: relative;
+    cursor: pointer;
+    width: clamp(120px, 28vw, 240px);
+    height: clamp(120px, 28vw, 240px);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .gift-wrapper:hover .gift-scene {
+    transform: scale(1.06);
+    filter: drop-shadow(0 24px 48px rgba(100,120,140,0.32));
+  }
+
+  .gift-scene {
+    width: 100%; height: 100%;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease;
+    filter: drop-shadow(0 12px 32px rgba(100,120,140,0.22));
+    animation: giftFloat 4s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
+  @keyframes giftFloat {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    25% { transform: translateY(-8px) rotate(0.5deg); }
+    50% { transform: translateY(-12px) rotate(1deg); }
+    75% { transform: translateY(-5px) rotate(-0.5deg); }
+  }
+
+  .gift-wrapper.opened .gift-scene {
+    animation: giftOpen 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  @keyframes giftOpen {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2) rotate(-5deg); }
+    70% { transform: scale(0.9) rotate(3deg); }
+    100% { transform: scale(0) rotate(15deg); opacity: 0; }
+  }
+
+  /* SVG Gift */
+  #gift-svg {
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+
+  /* Lid animation */
+  #gift-lid {
+    transform-origin: 50% 100%;
+    transition: transform 0.5s ease;
+  }
+  .opened #gift-lid {
+    animation: lidFly 0.6s ease forwards;
+  }
+  @keyframes lidFly {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-300px) rotate(-45deg); opacity: 0; }
+  }
+
+  /* Ribbon shine */
+  #ribbon-h { animation: ribbonShine 3s ease-in-out infinite; }
+  @keyframes ribbonShine {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+  }
+
+  /* Bow bounce */
+  #bow { animation: bowBounce 4s ease-in-out infinite; transform-origin: center; }
+  @keyframes bowBounce {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    25% { transform: scaleY(1.05) scaleX(0.97); }
+    50% { transform: scaleY(0.97) scaleX(1.04); }
+  }
+
+  /* Stars */
+  .star {
+    position: fixed;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    font-size: clamp(16px, 4vw, 28px);
+    animation: starBurst 1s ease-out forwards;
+  }
+  @keyframes starBurst {
+    0% { transform: translate(0,0) scale(0); opacity: 1; }
+    60% { opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
+  }
+
+  /* Confetti canvas */
+  #confetti-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #confetti-canvas.active { opacity: 1; }
+
+  /* Reveal text */
+  .reveal-text {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .reveal-text.show {
+    animation: revealTextIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
+  }
+  @keyframes revealTextIn {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .its-a {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 6vw, 3.5rem);
+    color: #c0778a;
+    letter-spacing: 0.15em;
+    text-shadow: 0 2px 20px rgba(212,96,122,0.3);
+    margin-bottom: 0.1em;
+  }
+
+  .girl-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(4rem, 18vw, 10rem);
+    background: linear-gradient(135deg, #e8527a 0%, #d4607a 30%, #c0778a 60%, #f48fb1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    filter: drop-shadow(0 4px 24px rgba(212,96,122,0.4));
+    animation: none;
+  }
+  .reveal-text.show .girl-text {
+    animation: glitter 2s ease-in-out infinite 1.4s;
+  }
+  @keyframes glitter {
+    0%, 100% { filter: drop-shadow(0 4px 24px rgba(212,96,122,0.4)); }
+    50% { filter: drop-shadow(0 4px 40px rgba(212,96,122,0.8)) brightness(1.1); }
+  }
+
+  .hearts-row {
+    display: flex;
+    gap: clamp(8px, 2vw, 20px);
+    margin-top: clamp(8px, 2vw, 20px);
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
+    animation: heartsFloat 2s ease-in-out infinite;
+  }
+  @keyframes heartsFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Ripple on click */
+  .ripple {
+    position: fixed;
+    border-radius: 50%;
+    background: rgba(100,130,160,0.20);
+    transform: scale(0);
+    animation: rippleOut 0.8s ease-out forwards;
+    pointer-events: none;
+    z-index: 3;
+  }
+  @keyframes rippleOut {
+    to { transform: scale(6); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="stage">
+  <p class="hint" id="hint">Klicke auf das Geschenk ✨</p>
+
+  <div class="gift-wrapper" id="gift" onclick="openGift(event)">
+    <div class="gift-scene">
+      <svg id="gift-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#dcdad4"/>
+            <stop offset="100%" stop-color="#c4c0b8"/>
+          </linearGradient>
+          <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ceccc6"/>
+            <stop offset="100%" stop-color="#b4b0a8"/>
+          </linearGradient>
+          <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#8fa6be"/>
+            <stop offset="100%" stop-color="#5a7090"/>
+          </linearGradient>
+          <linearGradient id="bowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#9ab4cc"/>
+            <stop offset="100%" stop-color="#6a8aa8"/>
+          </linearGradient>
+          <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#808880" flood-opacity="0.20"/>
+          </filter>
+          <filter id="bowShadow">
+            <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#804050" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+
+        <!-- Shadow beneath box -->
+        <ellipse cx="100" cy="208" rx="60" ry="8" fill="rgba(160,100,80,0.12)"/>
+
+        <!-- Box body -->
+        <rect x="30" y="110" width="140" height="95" rx="6" fill="url(#boxGrad)" filter="url(#softShadow)"/>
+        <!-- Box side shading -->
+        <rect x="30" y="110" width="12" height="95" rx="3" fill="rgba(0,0,0,0.05)"/>
+        <rect x="158" y="110" width="12" height="95" rx="3" fill="rgba(255,255,255,0.12)"/>
+
+        <!-- Vertical ribbon on box -->
+        <rect x="88" y="110" width="24" height="95" fill="url(#ribbonGrad)" opacity="0.85"/>
+
+        <!-- Lid group -->
+        <g id="gift-lid">
+          <!-- Lid body -->
+          <rect x="24" y="90" width="152" height="28" rx="5" fill="url(#lidGrad)" filter="url(#softShadow)"/>
+          <!-- Lid top edge highlight -->
+          <rect x="24" y="90" width="152" height="5" rx="5" fill="rgba(255,255,255,0.22)"/>
+          <!-- Horizontal ribbon on lid -->
+          <rect id="ribbon-h" x="24" y="100" width="152" height="14" fill="url(#ribbonGrad)" opacity="0.85"/>
+        </g>
+
+        <!-- Bow -->
+        <g id="bow" filter="url(#bowShadow)">
+          <!-- Left loop -->
+          <ellipse cx="78" cy="82" rx="28" ry="16" fill="url(#bowGrad)" transform="rotate(-30 78 82)"/>
+          <ellipse cx="78" cy="82" rx="18" ry="9" fill="rgba(255,255,255,0.18)" transform="rotate(-30 78 82)"/>
+          <!-- Right loop -->
+          <ellipse cx="122" cy="82" rx="28" ry="16" fill="url(#bowGrad)" transform="rotate(30 122 82)"/>
+          <ellipse cx="122" cy="82" rx="18" ry="9" fill="rgba(255,255,255,0.18)" transform="rotate(30 122 82)"/>
+          <!-- Left tail -->
+          <path d="M 100 92 Q 72 104 62 116" stroke="url(#ribbonGrad)" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <!-- Right tail -->
+          <path d="M 100 92 Q 128 104 138 116" stroke="url(#ribbonGrad)" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <!-- Center knot -->
+          <circle cx="100" cy="88" r="12" fill="url(#bowGrad)"/>
+          <circle cx="100" cy="87" r="6" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="100" cy="87" r="3" fill="rgba(255,255,255,0.5)"/>
+        </g>
+
+        <!-- Sparkle decorations on box -->
+        <g opacity="0.4">
+          <text x="48" y="158" font-size="10" fill="#8fa6be">✦</text>
+          <text x="140" y="150" font-size="8" fill="#8fa6be">✦</text>
+          <text x="155" y="175" font-size="6" fill="#8fa6be">✦</text>
+          <text x="42" y="190" font-size="7" fill="#8fa6be">✦</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Reveal overlay -->
+<div class="reveal-text" id="reveal-text">
+  <div class="its-a">It's a</div>
+  <div class="girl-text">Girl!</div>
+  <div class="hearts-row">💕 🎀 💕</div>
+</div>
+
+<script>
+  // Generate subtle floating background dots
+  const colors = ['#8a9aaa','#aab0b8','#c4c8cc','#d8dadc'];
+  for (let i = 0; i < 18; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = Math.random() * 60 + 20;
+    dot.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      animation-duration:${Math.random()*6+5}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    document.body.appendChild(dot);
+  }
+
+  // Confetti
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiPieces = [];
+  let animating = false;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const COLORS = [
+    '#f48fb1','#f06292','#ec407a','#e91e63',
+    '#fce4ec','#f8bbd0','#ffb7c5','#ff85a1',
+    '#fff0f5','#ffe0ea','#ffd6e8','#ffaac5',
+    '#c0778a','#d4607a','#ffffff','#ffd700'
+  ];
+
+  function spawnConfetti(n = 200) {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.random() * Math.PI * 2);
+      const speed = Math.random() * 14 + 4;
+      confettiPieces.push({
+        x: cx + (Math.random()-0.5)*60,
+        y: cy + (Math.random()-0.5)*60,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - Math.random()*12,
+        w: Math.random()*12+5,
+        h: Math.random()*6+3,
+        color: COLORS[Math.floor(Math.random()*COLORS.length)],
+        rot: Math.random()*360,
+        rotSpeed: (Math.random()-0.5)*12,
+        shape: Math.random() < 0.3 ? 'circle' : (Math.random() < 0.5 ? 'rect' : 'star'),
+        alpha: 1,
+        gravity: 0.35 + Math.random()*0.2,
+        drag: 0.99
+      });
+    }
+  }
+
+  function drawStar(ctx, x, y, r) {
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a = (i*4*Math.PI/5) - Math.PI/2;
+      const b = ((i*4+2)*Math.PI/5) - Math.PI/2;
+      if (i===0) ctx.moveTo(x+r*Math.cos(a), y+r*Math.sin(a));
+      else ctx.lineTo(x+r*Math.cos(a), y+r*Math.sin(a));
+      ctx.lineTo(x+(r/2)*Math.cos(b), y+(r/2)*Math.sin(b));
+    }
+    ctx.closePath();
+  }
+
+  function animateConfetti() {
+    if (!animating) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiPieces = confettiPieces.filter(p => p.alpha > 0.02);
+    if (confettiPieces.length === 0) { animating = false; canvas.classList.remove('active'); return; }
+
+    for (const p of confettiPieces) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.rot += p.rotSpeed;
+      if (p.y > canvas.height + 20) p.alpha = 0;
+      else if (p.y > canvas.height * 0.7) p.alpha -= 0.012;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+
+      if (p.shape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.w/2, 0, Math.PI*2);
+        ctx.fill();
+      } else if (p.shape === 'star') {
+        drawStar(ctx, 0, 0, p.w/2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      }
+      ctx.restore();
+    }
+    requestAnimationFrame(animateConfetti);
+  }
+
+  function createRipple(x, y) {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    const size = 80;
+    r.style.cssText = `width:${size}px;height:${size}px;left:${x-size/2}px;top:${y-size/2}px;`;
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 900);
+  }
+
+  function burstStars(x, y) {
+    const emojis = ['✨','💕','🎀','⭐','💖','🌸'];
+    for (let i = 0; i < 10; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      const angle = (i/10)*Math.PI*2;
+      const dist = Math.random()*120+60;
+      s.style.cssText = `
+        left:${x}px; top:${y}px;
+        --tx:${Math.cos(angle)*dist}px;
+        --ty:${Math.sin(angle)*dist}px;
+        animation-delay:${Math.random()*0.3}s;
+        animation-duration:${0.7+Math.random()*0.5}s;
+      `;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1500);
+    }
+  }
+
+  let opened = false;
+  function openGift(e) {
+    if (opened) return;
+    opened = true;
+
+    const rect = document.getElementById('gift').getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+
+    createRipple(cx, cy);
+    burstStars(cx, cy);
+
+    document.getElementById('gift').classList.add('opened');
+    document.getElementById('hint').classList.add('hide');
+
+    setTimeout(() => {
+      document.body.classList.add('revealed');
+      canvas.classList.add('active');
+      animating = true;
+      spawnConfetti(280);
+      animateConfetti();
+
+      // Extra confetti waves
+      setTimeout(() => spawnConfetti(150), 600);
+      setTimeout(() => spawnConfetti(100), 1400);
+
+      document.getElementById('reveal-text').classList.add('show');
+    }, 500);
+  }
+
+  // Extra confetti on click after reveal
+  canvas.addEventListener('click', (e) => {
+    if (!opened) return;
+    spawnConfetti(80);
+  });
+</script>
+</body>
+</html>
